@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients - FreeFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>FreeFlow</h1>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="clients.html" class="nav-link active">Clients</a>
+            <a href="invoices.html" class="nav-link">Invoices</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="reminders.html" class="nav-link">Reminders</a>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Clients</h2>
+            <button id="addClientBtn" class="btn btn-primary">Add Client</button>
+        </div>
+
+        <!-- Add Client Modal -->
+        <div id="clientModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Client</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="clientForm">
+                    <div class="form-group">
+                        <label for="clientName">Name</label>
+                        <input type="text" id="clientName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientEmail">Email</label>
+                        <input type="email" id="clientEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">Phone</label>
+                        <input type="tel" id="clientPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientNotes">Notes</label>
+                        <textarea id="clientNotes" name="notes" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="clientsTable" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <!-- Clients will be populated here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No clients found. Add your first client to get started!</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="clients.js"></script>
+</body>
+</html>

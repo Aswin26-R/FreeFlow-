@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - FreeFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>FreeFlow</h1>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="clients.html" class="nav-link">Clients</a>
+            <a href="invoices.html" class="nav-link">Invoices</a>
+            <a href="projects.html" class="nav-link active">Projects</a>
+            <a href="reminders.html" class="nav-link">Reminders</a>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Projects</h2>
+            <button id="addTaskBtn" class="btn btn-primary">Add Task</button>
+        </div>
+
+        <!-- Add Task Modal -->
+        <div id="taskModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Task</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskClient">Client</label>
+                        <select id="taskClient" name="client">
+                            <option value="">Select a client</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskStatus">Status</label>
+                        <select id="taskStatus" name="status" required>
+                            <option value="todo">To Do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="kanban-board">
+            <div class="kanban-column" data-status="todo">
+                <div class="column-header">
+                    <h3>To Do</h3>
+                    <span class="task-count" id="todoCount">0</span>
+                </div>
+                <div class="column-content" id="todoColumn">
+                    <!-- Tasks will be populated here -->
+                </div>
+            </div>
+
+            <div class="kanban-column" data-status="inprogress">
+                <div class="column-header">
+                    <h3>In Progress</h3>
+                    <span class="task-count" id="inprogressCount">0</span>
+                </div>
+                <div class="column-content" id="inprogressColumn">
+                    <!-- Tasks will be populated here -->
+                </div>
+            </div>
+
+            <div class="kanban-column" data-status="done">
+                <div class="column-header">
+                    <h3>Done</h3>
+                    <span class="task-count" id="doneCount">0</span>
+                </div>
+                <div class="column-content" id="doneColumn">
+                    <!-- Tasks will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>No tasks found. Add your first task to get started!</p>
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="projects.js"></script>
+</body>
+</html>

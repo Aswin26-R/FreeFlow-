@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders - FreeFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>FreeFlow</h1>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="clients.html" class="nav-link">Clients</a>
+            <a href="invoices.html" class="nav-link">Invoices</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="reminders.html" class="nav-link active">Reminders</a>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Reminders</h2>
+            <p>Keep track of overdue invoices and important deadlines</p>
+        </div>
+
+        <div class="reminders-section">
+            <div class="section">
+                <h3>Overdue Invoices</h3>
+                <div id="overdueInvoices" class="reminders-list">
+                    <!-- Overdue invoices will be populated here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Upcoming Due Dates (Next 7 Days)</h3>
+                <div id="upcomingDueDates" class="reminders-list">
+                    <!-- Upcoming due dates will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">✅</div>
+            <h3>All caught up!</h3>
+            <p>No overdue invoices or upcoming deadlines at the moment.</p>
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="reminders.js"></script>
+</body>
+</html>

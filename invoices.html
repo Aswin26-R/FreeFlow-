@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - FreeFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>FreeFlow</h1>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="clients.html" class="nav-link">Clients</a>
+            <a href="invoices.html" class="nav-link active">Invoices</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="reminders.html" class="nav-link">Reminders</a>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Invoices</h2>
+            <button id="addInvoiceBtn" class="btn btn-primary">Create Invoice</button>
+        </div>
+
+        <!-- Add Invoice Modal -->
+        <div id="invoiceModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Create Invoice</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <form id="invoiceForm">
+                    <div class="form-group">
+                        <label for="invoiceClient">Client</label>
+                        <select id="invoiceClient" name="client" required>
+                            <option value="">Select a client</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceProject">Project</label>
+                        <input type="text" id="invoiceProject" name="project" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceAmount">Amount ($)</label>
+                        <input type="number" id="invoiceAmount" name="amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDueDate">Due Date</label>
+                        <input type="date" id="invoiceDueDate" name="dueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceStatus">Status</label>
+                        <select id="invoiceStatus" name="status" required>
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="invoicesTable" class="data-table">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Client</th>
+                        <th>Project</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="invoicesTableBody">
+                    <!-- Invoices will be populated here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No invoices found. Create your first invoice to get started!</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="invoices.js"></script>
+</body>
+</html>

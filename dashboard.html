@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FreeFlow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>FreeFlow</h1>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="clients.html" class="nav-link">Clients</a>
+            <a href="invoices.html" class="nav-link">Invoices</a>
+            <a href="projects.html" class="nav-link">Projects</a>
+            <a href="reminders.html" class="nav-link">Reminders</a>
+            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Dashboard</h2>
+            <p id="welcomeMessage">Welcome back!</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="summary-card">
+                <div class="card-icon">👥</div>
+                <div class="card-content">
+                    <h3>Total Clients</h3>
+                    <p id="totalClients" class="card-number">0</p>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">📄</div>
+                <div class="card-content">
+                    <h3>Pending Invoices</h3>
+                    <p id="pendingInvoices" class="card-number">0</p>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">📋</div>
+                <div class="card-content">
+                    <h3>Active Projects</h3>
+                    <p id="activeProjects" class="card-number">0</p>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon">⚠️</div>
+                <div class="card-content">
+                    <h3>Overdue Reminders</h3>
+                    <p id="overdueReminders" class="card-number">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-sections">
+            <div class="section">
+                <h3>Recent Clients</h3>
+                <div id="recentClients" class="recent-list">
+                    <!-- Recent clients will be populated here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Recent Invoices</h3>
+                <div id="recentInvoices" class="recent-list">
+                    <!-- Recent invoices will be populated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="utils.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
