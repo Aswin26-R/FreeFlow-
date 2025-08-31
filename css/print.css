@@ -1,0 +1,6 @@
+/* print.css — make tables and invoices PDF-friendly */
+@media print {
+  .no-print { display: none !important; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #e5e7eb; padding: 8px; }
+}

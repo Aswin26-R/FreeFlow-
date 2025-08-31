@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="min-h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - FreeFlow</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/print.css">
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a" />
 </head>
-<body>
+<body class="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
@@ -39,7 +45,76 @@
         </div>
     </div>
 
-    <script src="utils.js"></script>
-    <script src="auth.js"></script>
+    <script type="module">
+        import "./js/app.js";
+        import { toast } from "./js/modules/notifications.js";
+        import { isEmail, strongPassword, requireFields } from "./js/modules/validation.js";
+        import { storage } from "./js/modules/storage.js";
+        
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', handleSignup);
+            }
+        });
+        
+        function handleSignup(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const fullName = formData.get('fullName').trim();
+            const email = formData.get('email').trim();
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            if (!requireFields(form, ['fullName', 'email', 'password', 'confirmPassword'])) {
+                toast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!isEmail(email)) {
+                toast('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!strongPassword(password)) {
+                toast('Password must be at least 8 characters with uppercase, lowercase, and number', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                toast('Passwords do not match', 'error');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            if (users.find(u => u.email === email)) {
+                toast('An account with this email already exists', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: generateId(),
+                fullName: fullName,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            const userSession = { id: newUser.id, fullName: newUser.fullName, email: newUser.email };
+            localStorage.setItem('currentUser', JSON.stringify(userSession));
+            
+            toast('Account created successfully!', 'success');
+            setTimeout(() => window.location.href = 'dashboard.html', 1000);
+        }
+    </script>
 </body>
 </html>

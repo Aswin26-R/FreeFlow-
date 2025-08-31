@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="min-h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - FreeFlow</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/print.css">
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#0f172a" />
 </head>
-<body>
+<body class="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 min-h-screen">
     <nav class="navbar">
         <div class="nav-brand">
             <h1>FreeFlow</h1>
@@ -17,6 +25,7 @@
             <a href="invoices.html" class="nav-link">Invoices</a>
             <a href="projects.html" class="nav-link">Projects</a>
             <a href="reminders.html" class="nav-link">Reminders</a>
+            <button id="themeToggle" class="no-print rounded-xl px-3 py-2 bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 mr-2">Toggle Theme</button>
             <button id="logoutBtn" class="btn btn-secondary">Logout</button>
         </div>
     </nav>
@@ -24,7 +33,17 @@
     <main class="main-content">
         <div class="page-header">
             <h2>Dashboard</h2>
-            <p id="welcomeMessage">Welcome back!</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <p id="welcomeMessage">Welcome back!</p>
+                <div class="flex gap-2 items-center">
+                    <label class="text-sm font-medium">Role:</label>
+                    <select id="roleSelector" class="p-2 border-2 border-gray-200 rounded-xl text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-white">
+                        <option value="freelancer">Freelancer</option>
+                        <option value="admin">Admin</option>
+                        <option value="accountant">Accountant</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <div class="dashboard-grid">
@@ -63,6 +82,11 @@
 
         <div class="dashboard-sections">
             <div class="section">
+                <h3>Invoice Trends</h3>
+                <div class="h-64"><canvas id="invoicesByMonth"></canvas></div>
+            </div>
+            
+            <div class="section">
                 <h3>Recent Clients</h3>
                 <div id="recentClients" class="recent-list">
                     <!-- Recent clients will be populated here -->
@@ -78,7 +102,168 @@
         </div>
     </main>
 
-    <script src="utils.js"></script>
-    <script src="dashboard.js"></script>
+    <script type="module">
+        import "./js/app.js";
+        import { initDashboard } from "./js/modules/charts.js";
+        import { toast } from "./js/modules/notifications.js";
+        import { storage } from "./js/modules/storage.js";
+        
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        }
+        
+        function getUserData(key) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return [];
+            const data = localStorage.getItem(`${currentUser.id}_${key}`);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        
+        function isOverdue(dateString) {
+            const today = new Date();
+            const dueDate = new Date(dateString);
+            today.setHours(0, 0, 0, 0);
+            dueDate.setHours(0, 0, 0, 0);
+            return dueDate < today;
+        }
+        
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, (m) => map[m]);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('currentUser')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            setupLogout();
+            setupRoleSelector();
+            loadDashboardData();
+            initDashboard();
+        });
+        
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('currentUser');
+                    toast('Logged out successfully', 'info');
+                    setTimeout(() => window.location.href = 'index.html', 1000);
+                });
+            }
+        }
+        
+        function setupRoleSelector() {
+            const roleSelector = document.getElementById('roleSelector');
+            const currentRole = storage.get('role', 'freelancer');
+            roleSelector.value = currentRole;
+            
+            roleSelector.addEventListener('change', (e) => {
+                const newRole = e.target.value;
+                storage.set('role', newRole);
+                toast(`Role changed to ${newRole}`, 'info');
+                
+                // Re-apply role controls with a small delay to let the toast show
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            });
+        }
+        
+        function loadDashboardData() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return;
+            
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            if (welcomeMessage) {
+                welcomeMessage.textContent = `Welcome back, ${currentUser.fullName}!`;
+            }
+            
+            updateSummaryCards();
+            loadRecentClients();
+            loadRecentInvoices();
+        }
+        
+        function updateSummaryCards() {
+            const clients = getUserData('clients');
+            const invoices = getUserData('invoices');
+            const tasks = getUserData('tasks');
+            
+            document.getElementById('totalClients').textContent = clients.length;
+            
+            const pendingInvoices = invoices.filter(invoice => invoice.status === 'Pending');
+            document.getElementById('pendingInvoices').textContent = pendingInvoices.length;
+            
+            const activeTasks = tasks.filter(task => task.status !== 'done');
+            document.getElementById('activeProjects').textContent = activeTasks.length;
+            
+            const overdueInvoices = invoices.filter(invoice => invoice.status === 'Pending' && isOverdue(invoice.dueDate));
+            document.getElementById('overdueReminders').textContent = overdueInvoices.length;
+        }
+        
+        function loadRecentClients() {
+            const clients = getUserData('clients');
+            const recentClientsContainer = document.getElementById('recentClients');
+            
+            if (!recentClientsContainer) return;
+            
+            const recentClients = clients.slice(-3).reverse();
+            
+            if (recentClients.length === 0) {
+                recentClientsContainer.innerHTML = '<p style="color: #6b7280; text-align: center;">No clients yet</p>';
+                return;
+            }
+            
+            recentClientsContainer.innerHTML = recentClients.map(client => `
+                <div class="recent-item">
+                    <div class="recent-item-info">
+                        <h4>${escapeHtml(client.name)}</h4>
+                        <p>${escapeHtml(client.email)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function loadRecentInvoices() {
+            const invoices = getUserData('invoices');
+            const clients = getUserData('clients');
+            const recentInvoicesContainer = document.getElementById('recentInvoices');
+            
+            if (!recentInvoicesContainer) return;
+            
+            const recentInvoices = invoices.slice(-3).reverse();
+            
+            if (recentInvoices.length === 0) {
+                recentInvoicesContainer.innerHTML = '<p style="color: #6b7280; text-align: center;">No invoices yet</p>';
+                return;
+            }
+            
+            recentInvoicesContainer.innerHTML = recentInvoices.map(invoice => {
+                const client = clients.find(c => c.id === invoice.clientId);
+                const clientName = client ? client.name : 'Unknown Client';
+                
+                return `
+                    <div class="recent-item">
+                        <div class="recent-item-info">
+                            <h4>Invoice #${invoice.invoiceNumber}</h4>
+                            <p>${escapeHtml(clientName)} - ${formatCurrency(invoice.amount)}</p>
+                        </div>
+                        <span class="status-badge status-${invoice.status.toLowerCase()}">${invoice.status}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
 </body>
 </html>
